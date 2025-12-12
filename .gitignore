@@ -1,0 +1,17 @@
+# API Configuration (contains secrets)
+config.js
+config.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+

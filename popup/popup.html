@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Earth Cinema</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Ambient background -->
+    <div class="ambient-bg"></div>
+    
+    <!-- Header -->
+    <header class="header">
+      <div class="logo">
+        <svg class="logo-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+          <ellipse cx="16" cy="16" rx="14" ry="6" stroke="currentColor" stroke-width="1.5"/>
+          <ellipse cx="16" cy="16" rx="6" ry="14" stroke="currentColor" stroke-width="1.5"/>
+          <circle cx="16" cy="16" r="3" fill="currentColor"/>
+        </svg>
+        <div class="logo-text">
+          <h1>Earth Cinema</h1>
+          <span class="tagline">powered by fal.ai</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- Step Indicator -->
+      <div class="steps">
+        <div class="step active" data-step="1">
+          <span class="step-number">1</span>
+          <span class="step-label">Capture</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="2">
+          <span class="step-number">2</span>
+          <span class="step-label">Transform</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" data-step="3">
+          <span class="step-number">3</span>
+          <span class="step-label">Animate</span>
+        </div>
+      </div>
+
+      <!-- Reset Button -->
+      <button class="btn btn-reset hidden" id="reset-btn">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+        </svg>
+        Start Over
+      </button>
+
+      <!-- API Key Section (Collapsible) -->
+      <section class="card api-card">
+        <button class="card-header collapsible" id="api-toggle">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+            </svg>
+            <span>API Configuration</span>
+          </div>
+          <div class="api-status" id="api-status-badge">
+            <span class="status-dot"></span>
+            <span class="status-text">Not configured</span>
+          </div>
+          <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+        <div class="card-content collapsed" id="api-content">
+          <div class="input-group">
+            <label for="api-key">fal.ai API Key</label>
+            <div class="input-wrapper">
+              <input type="password" id="api-key" placeholder="Enter your API key">
+              <button class="input-action" id="toggle-visibility" title="Show/hide key">
+                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <p class="input-hint">Get your key at <a href="https://fal.ai/dashboard/keys" target="_blank">fal.ai/dashboard/keys</a></p>
+          </div>
+          <button class="btn btn-secondary" id="save-key">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+              <polyline points="17,21 17,13 7,13 7,21"/>
+              <polyline points="7,3 7,8 15,8"/>
+            </svg>
+            Save Key
+          </button>
+        </div>
+      </section>
+
+      <!-- Capture Section -->
+      <section class="card" id="capture-section">
+        <div class="card-header">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+              <circle cx="12" cy="13" r="4"/>
+            </svg>
+            <span>Capture View</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <p class="card-description">Navigate to your desired location in Google Earth 3D view, then capture the scene.</p>
+          <button class="btn btn-primary btn-large" id="capture-btn" disabled>
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            Capture Current View
+          </button>
+          <div class="preview-container hidden" id="capture-preview">
+            <div class="preview-label">Captured</div>
+            <img id="preview-image" alt="Captured view">
+          </div>
+        </div>
+      </section>
+
+      <!-- Transform Section -->
+      <section class="card hidden" id="transform-section">
+        <div class="card-header">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+            </svg>
+            <span>Transform Image</span>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="input-group">
+            <label for="transform-prompt">Transformation Prompt</label>
+            <textarea id="transform-prompt" rows="3" placeholder="e.g., cinematic aerial drone shot at golden hour, film grain, shallow depth of field, 35mm film photography"></textarea>
+          </div>
+          <button class="btn btn-primary" id="transform-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/>
+            </svg>
+            Transform with AI
+          </button>
+          <div class="preview-container hidden" id="transform-preview">
+            <div class="preview-label">Transformed</div>
+            <img id="transformed-image" alt="Transformed result">
+            <div class="preview-actions">
+              <button class="btn btn-ghost" id="open-image-tab">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15,3 21,3 21,9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Fullscreen
+              </button>
+              <button class="btn btn-ghost" id="download-image">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7,10 12,15 17,10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Video Section -->
+      <section class="card hidden" id="video-section">
+        <div class="card-header">
+          <div class="card-title">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+            <span>Generate Video</span>
+          </div>
+          <span class="badge">Optional</span>
+        </div>
+        <div class="card-content">
+          <div class="input-group">
+            <label for="video-prompt">Motion Prompt</label>
+            <textarea id="video-prompt" rows="2" placeholder="e.g., slow cinematic drone push forward, gentle camera tilt up revealing the horizon"></textarea>
+          </div>
+          <div class="video-options">
+            <div class="input-group">
+              <label for="video-duration">Duration</label>
+              <select id="video-duration">
+                <option value="4s">4 seconds</option>
+                <option value="6s">6 seconds</option>
+                <option value="8s" selected>8 seconds</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <label class="toggle-label">
+                <input type="checkbox" id="video-audio" checked>
+                <span>Generate audio</span>
+              </label>
+            </div>
+          </div>
+          <button class="btn btn-primary" id="video-btn">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5,3 19,12 5,21"/>
+            </svg>
+            Generate Video
+          </button>
+          <div class="preview-container hidden" id="video-preview">
+            <div class="preview-label">Generated Video</div>
+            <video id="result-video" controls></video>
+            <div class="preview-actions">
+              <button class="btn btn-ghost" id="open-video-tab">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15,3 21,3 21,9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                Fullscreen
+              </button>
+              <button class="btn btn-ghost" id="download-video">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7,10 12,15 17,10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Download
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Toast -->
+      <div class="toast hidden" id="toast">
+        <div class="toast-icon"></div>
+        <div class="toast-content">
+          <span class="toast-title"></span>
+          <span class="toast-message"></span>
+        </div>
+      </div>
+
+      <!-- Loading Overlay -->
+      <div class="loading-overlay hidden" id="loading">
+        <div class="loader"></div>
+        <p class="loading-text" id="loading-text">Processing...</p>
+        <button class="btn btn-cancel" id="cancel-btn">Cancel</button>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>Built with</span>
+      <svg class="heart" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+      </svg>
+      <span>by fal.ai</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
+
